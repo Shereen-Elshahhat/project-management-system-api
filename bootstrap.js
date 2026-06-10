@@ -1,0 +1,21 @@
+import { userRouter } from "./src/modules/user/user.routes.js"
+import express from 'express'
+import { AppError } from './src/utils/AppError.js';
+import { globalError } from './src/middleWare/globalError.js';
+
+export const bootstrap = (app)=>{
+    app.use(express.json())
+    app.use("/user",userRouter)
+
+
+    app.use((req,res,next)=>{
+        next(new AppError(`404 not found page ${req.originalUrl}`,404))
+    })
+
+    app.use(globalError)
+    process.on("unhandledRejection",(err)=>{
+        console.log("error DB");
+
+    })
+
+}

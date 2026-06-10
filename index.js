@@ -1,4 +1,4 @@
-import { DBconnection } from './db/DBconnection.js'
+import { DBconnection } from './db/dbconnect.js'
 import { bootstrap } from './bootstrap.js';
 import express from 'express'
 

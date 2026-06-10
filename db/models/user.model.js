@@ -1,60 +1,50 @@
-import mongoose from "../mongoose-global-setUp.js";
-import { Schema } from "mongoose";
+import { model, Schema } from "mongoose"
+import bcrypt from 'bcrypt'
 
-
-const UserSchema = new mongoose.Schema({
+const userSchema = new Schema ({
     name:{
-        type: String,
-        required: true,
-        trim: true
+        type:String,
+        required:true,
+        trim:true
     },
     email:{
-        type: String,
-        required: true,
-        trim: true,
-        unique: true
+        type:String,
+        required:true,
+        unique:true,
+        trim:true,
+        lowercase:true,
     },
     password:{
+        type:String,
+        required:true,
+        minlength:9,
+        select:false,
+    },
+    role:{
+        type:String,
+        enum: ["user", "admin"],
+        default: "user"
+    },
+    status: {
         type: String,
-        required: true,
-        select: false
+        enum: ["active", "No Active"],
+        default: "active"
     },
-    role: {
-        type: String,
-        enum: ["User", "Admin"],
-        default: "User"
+    otp:{
+        type:String,
     },
-    status:{
-        type: String,
-        enum: ["Active", "InActive"],
-        default: "InActive"
-    },
-    otp: String,
-    otpExpireAt: Date,
-    isOtpVerified: {
-        type: Boolean,
-        default: false
-    },
-    changedPasswordAt: Date,
-    resetPasswordExpireAt: Date
-},
-{
-    versionKey: false,
-    timestamps: true
-});
-
-UserSchema.set("toJSON", {
-    transform: (doc, ret) => {
-        delete ret.password;
-        delete ret.otp;
-        delete ret.otpExpireAt;
-        delete ret.isOtpVerified;
-        delete ret.changedPasswordAt;
-        delete ret.resetPasswordExpireAt;
-        delete ret.role;
-        return ret;
+    optExpires:Date,
+    passwordChangeAt:Date,
+    isOTPVerified:{
+        type:Boolean,
+        default:false
     }
-});
+},{timestamps: true})
 
-const User = mongoose.model("User", UserSchema);
-export default User;
+userSchema.pre("save",async function(next){
+    if(!this.isModified("password")) return next()
+    this.password = await bcrypt.hash(this.password,8)
+})
+
+
+export const User = model("user", userSchema)
