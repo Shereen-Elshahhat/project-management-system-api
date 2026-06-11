@@ -17,7 +17,7 @@ export const updateUserSchema = Joi.object({
         role:Joi.string().valid("user","admin").default("user")
     });
 
-export const getUserSchema = Joi.object({
+export const idSchema = Joi.object({
         id: Joi.string().length(24).hex().required(),
     });
 
