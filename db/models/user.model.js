@@ -33,7 +33,8 @@ const userSchema = new Schema ({
    otp:{
     type:String,
    },
-   otpExpires:Date,
+   optExpires:Date,
+   passwordChangeAt:Date,
    isOTPVerified:{
      type:Boolean,
      default:false
