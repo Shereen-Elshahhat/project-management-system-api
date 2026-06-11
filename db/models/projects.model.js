@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 
+
 const projectSchema = new Schema(
   {
     title: {
@@ -38,4 +39,4 @@ projectSchema.virtual("tasks", {
   foreignField: "project",
 });
 
-export const Project = model("Project", projectSchema);
+export const Project = model ("Project", projectSchema);

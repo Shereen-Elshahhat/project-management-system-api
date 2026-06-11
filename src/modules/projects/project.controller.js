@@ -6,6 +6,37 @@ import { AppError } from "../../utils/AppError.js";
 import "../../../db/models/user.model.js";
 import "../../../db/models/task.model.js";
 
+
+export const addProject = catchError(async(req,res,next)=>{
+
+  // title , description , adminId , team , tasks
+
+  const project = await new Project(req.body);
+
+  await project.save()
+
+  res.status(200).json({message:" project is created successfully", data: project})
+
+})
+
+
+export const updateProject = catchError(async(req,res,next)=>{
+
+
+  const project = await Project.findById(req.params.id)
+
+if(!project) return res.status(404).json({message : "not found"}) 
+// next(new AppError("project is not founded" , 400))
+
+  Object.assign (project, req.body)
+
+  await project.save();
+
+  res.status(200).json({message:" project is updated successfully", data : project})
+
+})
+
+
 export const getAllProjects = catchError(async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -39,6 +70,8 @@ export const getAllProjects = catchError(async (req, res, next) => {
 export const getProjectById = catchError(async (req, res, next) => {
   const { id } = req.params;
 
+
+
   const project = await Project.findById(id)
     .populate("admin", "name email")
     .populate("team", "name email role")
@@ -71,3 +104,15 @@ export const getProjectById = catchError(async (req, res, next) => {
     data: project,
   });
 });
+
+export const deleteProject = catchError(async(req,res,next)=>{
+
+
+  const project = await Project.findByIdAndDelete(req.params.id)
+
+if(!project) return next(new AppError("project is not founded" , 400))
+
+
+  res.status(200).json({message:" project is deleted"})
+
+})
