@@ -30,11 +30,7 @@ const ProtectedRoute = catchError(async(req,res,next)=>{
     let payload= jwt.verify(token,process.env.JWT_SECRET)
     let user = await User.findById(payload.id)
     if(!user) return next(new AppError("User not found",404))
-        req.user = user
-        if(user.passwordChangeAt){
-            const changePasswordTime = parseInt(user.passwordChangeAt.getTime()/1000,10)
-            if(payload.iat < changePasswordTime) return next (new AppError("token expired"))
-        }
+    req.user = user
     next()
 })
  
@@ -112,7 +108,6 @@ const resetPassword = catchError(async (req, res, next) => {
     }
 
     user.password = password;
-    user.passwordChangeAt = Date.now();
     user.isOTPVerified = false;
     await user.save();
 
