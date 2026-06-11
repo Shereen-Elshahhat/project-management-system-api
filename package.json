@@ -2,8 +2,10 @@
   "name": "proj-menagement-api",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:seed": "node db/seeds/run.js"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +20,6 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.0",
     "nodemon": "^3.1.14"
+    "nodemailer": "^8.0.11"
   }
 }
