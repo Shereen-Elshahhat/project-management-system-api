@@ -28,13 +28,12 @@ const userSchema = new Schema ({
     status: {
      type: String,
      enum: ["active", "No Active"],
-     default: "active"
+     default: "No Active"
    },
    otp:{
     type:String,
    },
    optExpires:Date,
-   passwordChangeAt:Date,
    isOTPVerified:{
      type:Boolean,
      default:false
