@@ -4,11 +4,15 @@ import express from "express";
 import { DBconnection } from "./db/dbconnect.js";
 import dotenv from "dotenv";
 
-const app = express();
-const port = 3005;
-bootstrap(app);
-DBconnection();
-dotenv.config();
+const app = express()
+const port = process.env.PORT || 3005
+bootstrap(app)
+DBconnection()
+
+
+app.get("/", (req,res)=>{
+    return res.send("Hello Project 2")
+})
 
 app.get("/", (req, res) => {
   return res.send("Hello Project 2");
