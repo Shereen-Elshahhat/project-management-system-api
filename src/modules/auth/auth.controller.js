@@ -24,20 +24,45 @@ const Login = catchError(async(req,res,next)=>{
         }
 })
 
-const ProtectedRoute = catchError(async(req,res,next)=>{
-    //check if token is exist
-    let {token} = req.headers
-   
-    let payload= jwt.verify(token,process.env.JWT_SECRET)
-    let user = await User.findById(payload.id)
-    if(!user) return next(new AppError("User not found",404))
-    req.user = user
-    next()
-})
- 
+// const ProtectedRoute = catchError(async(req,res,next)=>{
+//     //check if token is exist
+//     let {token} = req.headers
+//
+//     let payload= jwt.verify(token,process.env.JWT_SECRET)
+//     let user = await User.findById(payload.id)
+//     if(!user) return next(new AppError("User not found",404))
+//     req.user = user
+//     next()
+// })
 
+const ProtectedRoute = catchError(async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return next(new AppError("Token missing", 401));
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+        return next(new AppError("Invalid token format", 401));
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(payload.id);
+
+    if (!user) {
+        return next(new AppError("User not found", 404));
+    }
+
+    req.user = user;
+
+    next();
+});
 const allowedTo =(...roles)=>{
     return catchError(async(req,res,next)=>{
+
        if(roles.includes(req.user.role)) return next()
         return next(new AppError("you are not allowed to access this role",403))
 
