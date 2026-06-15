@@ -5,6 +5,7 @@ import projectRouter from './src/modules/projects/project.routes.js';
 import { authRouter } from './src/modules/auth/auth.routes.js';
 import { userRouter } from './src/modules/user/user.routes.js';
 import {taskRouter} from './src/modules/tasks/tasks.routes.js';
+
 export const bootstrap = (app)=>{
     app.use(express.json())
     app.use("/auth",authRouter)

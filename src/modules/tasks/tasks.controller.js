@@ -76,3 +76,27 @@ export const getAllTasks = catchError(async (req, res, next) => {
         tasks,
     });
 });
+
+// ==================================== update task ==============================================
+export const updateTask = catchError(async(req,res,next)=>{
+    const updatedData = {};
+    if(title) updatedData.title = req.body.title;
+    if(description) updatedData.description = req.body.description;
+    if(assignedUser) updatedData.assignedUser = req.body.assignedUser;
+    if(dueDate) updatedData.dueDate = req.body.dueDate;
+    if(status) updatedData.status = req.body.status;
+    // update data
+    const data = await Task.findByIdAndUpdate(req.params.id,updatedData,{returnDocument:"after"});
+    res.status(201).json({message:"Data updated successfully",data});
+});
+
+// ======================================= delete task ============================================
+export const deleteTask = catchError(async(req,res,next)=>{
+    const { id } = req.params;
+    const task = await Task.findById(id);
+    if (!task) {
+        return next(new AppError("Task not found",404));
+    }
+    await Task.findByIdAndDelete(id);
+    res.status(200).json({message: "Task deleted successfully"});
+});
