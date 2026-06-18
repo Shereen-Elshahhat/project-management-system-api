@@ -7,7 +7,8 @@ import { sendEmail } from "../../utils/sendEmail.js"
 import { otpEmailTemplate } from "../../utils/emailTemplates.js"
 
 const Register = catchError(async(req,res,next)=>{
-        let data = new User(req.body)
+        const { rePassword, ...userData } = req.body;
+        let data = new User(userData)
         await data.save()
         res.status(201).json({message:"User created successfully",data:{name:data.name, email:data.email}})
 })
