@@ -26,14 +26,21 @@ const Login = catchError(async(req,res,next)=>{
 })
 
 const ProtectedRoute = catchError(async(req,res,next)=>{
-    //check if token is exist
-    let {token} = req.headers
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return next(new AppError("Token required", 401));
+    }
+    const token = authHeader.split(" ")[1];
    
-    let payload= jwt.verify(token,process.env.JWT_SECRET)
-    let user = await User.findById(payload.id)
-    if(!user) return next(new AppError("User not found",404))
-    req.user = user
-    next()
+    try {
+        let payload = jwt.verify(token, process.env.JWT_SECRET)
+        let user = await User.findById(payload.id)
+        if(!user) return next(new AppError("User not found", 404))
+        req.user = user
+        next()
+    } catch (error) {
+        return next(new AppError("Invalid or expired token", 401))
+    }
 })
  
 
