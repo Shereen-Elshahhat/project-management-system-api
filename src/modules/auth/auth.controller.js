@@ -20,7 +20,7 @@ const Login = catchError(async(req,res,next)=>{
                 return res.status(200).json({message:"success login with token"  ,token});
             })
         }else{
-            return res.status(404).json({message:"incorrect email or password"});
+            return res.status(401).json({message:"Incorrect email or password"});
         }
 })
 
