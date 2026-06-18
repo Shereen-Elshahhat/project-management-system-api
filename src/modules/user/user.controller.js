@@ -67,6 +67,10 @@ const deleteUser =catchError(async(req,res,next) => {
     res.status(200).json({message: "User deleted successfully"});
 })
 
+const getProfile = catchError(async (req, res, next) => {
+    res.status(200).json({ message: "Done", user: req.user });
+});
+
 export{
-    getUser,createUser,getAllUsers,deleteUser,updateUser
+    getUser,createUser,getAllUsers,deleteUser,updateUser,getProfile
 }
