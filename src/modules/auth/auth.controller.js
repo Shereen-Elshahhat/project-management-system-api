@@ -113,6 +113,10 @@ const resetPassword = catchError(async (req, res, next) => {
     res.status(200).json({ message: "Password reset successfully" });
 });
 
+const Logout = catchError(async (req, res, next) => {
+    res.status(200).json({ message: "Logged out successfully" });
+});
+
 export {
     Register,
     Login,
@@ -120,5 +124,6 @@ export {
     allowedTo,
     forgetPassword,
     verifyOTP,
-    resetPassword
+    resetPassword,
+    Logout
 }
