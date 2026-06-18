@@ -14,7 +14,7 @@ const Register = catchError(async(req,res,next)=>{
 })
 
 const Login = catchError(async(req,res,next)=>{
-        let isExist = await User.findOne({email:req.body.email}).select("+password")
+        let isExist = await User.findOne({email:req.body.email.toLowerCase()}).select("+password")
         if(isExist && (await bcrypt.compare(req.body.password , isExist.password))){
             if(isExist.status === "No Active") return res.status(403).json({message:"your account is not active , please connect with admin"})
             jwt.sign({id:isExist._id,name:isExist.name,role:isExist.role},process.env.JWT_SECRET,{ expiresIn: "7d" },(error,token)=>{
@@ -49,7 +49,7 @@ const allowedTo =(...roles)=>{
 
 const forgetPassword = catchError(async (req, res, next) => {
     const { email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) return next(new AppError("User not found", 404));
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -75,7 +75,7 @@ const forgetPassword = catchError(async (req, res, next) => {
 
 const verifyOTP = catchError(async (req, res, next) => {
     const { email, otp } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) return next(new AppError("User not found", 404));
 
     if (!user.otp || user.otp !== otp || user.optExpires < Date.now()) {
@@ -92,7 +92,7 @@ const verifyOTP = catchError(async (req, res, next) => {
 
 const resetPassword = catchError(async (req, res, next) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) return next(new AppError("User not found", 404));
 
     if (!user.isOTPVerified) {
