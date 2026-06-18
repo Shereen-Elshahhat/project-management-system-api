@@ -28,7 +28,7 @@ projectRouter.post(
 projectRouter.get("/", validator(getAllProjectssSchema), getAllProjects);
 projectRouter.get("/:id", validator(getProjectByIdSchema), getProjectById);
 projectRouter.put(
-  "/update/:id",
+  "/:id",
   allowedTo("admin"),
   validator(updateProjectSchema),
   updateProject,
