@@ -11,7 +11,7 @@ import { validator } from "../../middleWare/validator.js";
 import {
   createProjectSchema,
   deleteProjectSchema,
-  getAllProjectssSchema,
+  getAllProjectsSchema,
   getProjectByIdSchema,
   updateProjectSchema,
 } from "./project.validation.js";
@@ -25,7 +25,7 @@ projectRouter.post(
   validator(createProjectSchema),
   addProject,
 );
-projectRouter.get("/", validator(getAllProjectssSchema), getAllProjects);
+projectRouter.get("/", validator(getAllProjectsSchema), getAllProjects);
 projectRouter.get("/:id", validator(getProjectByIdSchema), getProjectById);
 projectRouter.put(
   "/:id",

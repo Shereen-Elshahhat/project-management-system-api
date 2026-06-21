@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const getAllProjectssSchema = Joi.object({
+export const getAllProjectsSchema = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({
     "number.min": "Page must be at least 1",
   }),
@@ -30,16 +30,21 @@ export const createProjectSchema = Joi.object({
   }),
 
   team: Joi.array().items(Joi.string().hex().length(24)).optional(),
-});
+}).unknown(false);
 
 export const updateProjectSchema = Joi.object({
-  title: Joi.string().trim(),
-  description: Joi.string().trim().allow(""),
+  id: Joi.string().hex().length(24).required().messages({
+    "any.required": "Project ID is required",
+  }),
+  title: Joi.string().trim().optional(),
+  description: Joi.string().trim().allow("").optional(),
   team: Joi.array().items(Joi.string().hex().length(24)).optional(),
-}).min(1);
+})
+  .min(1)
+  .unknown(false);
 
 export const deleteProjectSchema = Joi.object({
   id: Joi.string().hex().length(24).required().messages({
     "any.required": "Project ID is required",
   }),
-});
+}).unknown(false);

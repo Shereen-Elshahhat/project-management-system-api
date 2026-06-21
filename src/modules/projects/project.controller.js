@@ -1,10 +1,9 @@
 import { Project } from "../../../db/models/projects.model.js";
+import { User } from "../../../db/models/user.model.js";
+import { Task } from "../../../db/models/task.model.js";
 import { catchError } from "../../middleWare/catchError.js";
 import { AppError } from "../../utils/AppError.js";
 import { APIFeatures } from "../../utils/APIFeatures.js";
-//declare model so i can use populate
-import "../../../db/models/user.model.js";
-import "../../../db/models/task.model.js";
 
 export const addProject = catchError(async (req, res, next) => {
   //validate the team members actually exist
@@ -22,9 +21,11 @@ export const addProject = catchError(async (req, res, next) => {
 
   await project.save();
 
-  res
-    .status(201)
-    .json({ message: " project is created successfully", data: project });
+  res.status(201).json({
+    status: "success",
+    message: "Project created successfully",
+    data: project,
+  });
 });
 
 export const updateProject = catchError(async (req, res, next) => {
@@ -95,10 +96,10 @@ export const getProjectById = catchError(async (req, res, next) => {
 
   const project = await Project.findById(id)
     .populate("admin", "name email")
-    .populate("team", "name email role")
+    .populate("team", "name email role status")
     .populate({
       path: "tasks",
-      select: "title  description status dueDate assignedUser",
+      select: "title description status dueDate assignedUser",
       populate: {
         path: "assignedUser",
         select: "name email",
