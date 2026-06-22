@@ -8,6 +8,7 @@ export const getAllProjectsSchema = Joi.object({
     "number.min": "Limit must be at least 1",
   }),
   sort: Joi.string().optional(),
+  search: Joi.string().optional().trim(),
   // allowed filters
   title: Joi.string().optional().trim(),
   description: Joi.string().optional().trim(),

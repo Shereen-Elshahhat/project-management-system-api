@@ -54,9 +54,11 @@ export const updateProject = catchError(async (req, res, next) => {
 
   await project.save();
 
-  res
-    .status(200)
-    .json({ message: " project is updated successfully", data: project });
+  res.status(200).json({
+    status: "success",
+    message: "project is updated successfully",
+    data: project,
+  });
 });
 
 export const getAllProjects = catchError(async (req, res, next) => {
@@ -67,12 +69,15 @@ export const getAllProjects = catchError(async (req, res, next) => {
   } else {
     filterObj.team = req.user.id;
   }
-  const totalResults = await Project.countDocuments(filterObj);
 
   const features = new APIFeatures(Project.find(filterObj), req.query)
     .filter()
-    .sort()
-    .paginate();
+    .search(["title", "description"])
+    .sort();
+
+  const totalResults = await features.query.clone().countDocuments();
+
+  features.paginate();
 
   const projects = await features.query
     .populate("admin", "name email")
@@ -83,10 +88,14 @@ export const getAllProjects = catchError(async (req, res, next) => {
   const totalPages = Math.ceil(totalResults / limit) || 1;
 
   res.status(200).json({
-    message: "success",
-    currentPage: page,
-    totalPages: totalPages,
-    totalResults: totalResults,
+    status: "success",
+    results: projects.length,
+    metadata: {
+      currentPage: page,
+      totalPages: totalPages,
+      totalResults: totalResults,
+      limit: limit,
+    },
     data: projects,
   });
 });
@@ -123,6 +132,7 @@ export const getProjectById = catchError(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
+    message: "Project fetched successfully",
     data: project,
   });
 });
@@ -141,5 +151,8 @@ export const deleteProject = catchError(async (req, res, next) => {
 
   await Project.findByIdAndDelete(req.params.id);
 
-  res.status(200).json({ message: "project is deleted" });
+  res.status(200).json({
+    status: "success",
+    message: "project is deleted successfully",
+  });
 });

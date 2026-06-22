@@ -47,6 +47,9 @@ const updateUser = catchError(async (req, res, next) => {
   const data = await User.findByIdAndUpdate(req.params.id, updatedData, {
     returnDocument: "after",
   }).select("-password");
+
+  if (!data) return next(new AppError("User not found", 404));
+
   res.status(200).json({
     status: "success",
     message: "User data updated successfully",
@@ -67,12 +70,14 @@ const getUser = catchError(async (req, res, next) => {
 
 // ===================================================== get all users ===========================================
 const getAllUsers = catchError(async (req, res, next) => {
-  const totalResults = await User.countDocuments({});
-
   const features = new APIFeatures(User.find(), req.query)
     .filter()
-    .sort()
-    .paginate();
+    .search(["name", "email"])
+    .sort();
+
+  const totalResults = await features.query.clone().countDocuments();
+
+  features.paginate();
 
   const users = await features.query.select("-password");
 
@@ -91,6 +96,7 @@ const getAllUsers = catchError(async (req, res, next) => {
       currentPage: page,
       totalPages: totalPages,
       totalResults: totalResults,
+      limit: limit,
     },
     data: users,
   });
