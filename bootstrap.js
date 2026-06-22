@@ -16,9 +16,14 @@ export const bootstrap = (app)=>{
     })
     
     app.use(globalError)
-    process.on("unhandledRejection",(err)=>{
-        console.log("error DB");
-        
-    })
-    
+
+    process.on("unhandledRejection", (err) => {
+        console.error("UNHANDLED REJECTION! 💥 Shutting down...", err);
+        process.exit(1);
+    });
+
+    process.on("uncaughtException", (err) => {
+        console.error("UNCAUGHT EXCEPTION! 💥 Shutting down...", err);
+        process.exit(1);
+    });
 }
