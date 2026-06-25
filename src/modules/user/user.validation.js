@@ -6,7 +6,7 @@ export const addUserValidation = Joi.object({
         email:Joi.string().email().required(),
         password:Joi.string().pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{9,30}$/).required(),
         rePassword:Joi.valid(Joi.ref("password")).required(),
-        role:Joi.string().valid("user","admin").default("user")
+        role:Joi.string().valid("user","admin").default("user").required()
     });
 
 export const updateUserSchema = Joi.object({

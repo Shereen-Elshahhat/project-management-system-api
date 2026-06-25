@@ -13,7 +13,7 @@ export const createTaskSchema = Joi.object({
 
     assignedUser: Joi.string().hex().length(24).optional(),
 
-    dueDate: Joi.date().optional(),
+    dueDate: Joi.date().min('now'),
 });
 
 export const idSchema = Joi.object({
@@ -24,6 +24,6 @@ export const updateTaskSchema = Joi.object({
         title: Joi.string().trim().optional(),
         description: Joi.string().trim().optional(),
         assignedUser: Joi.string().hex().length(24).optional(),
-        dueDate: Joi.date().optional(),
+        dueDate: Joi.date().greater("now"),
         status: Joi.string().valid("todo", "inprogress", "done").optional(),
     }).unknown(false);

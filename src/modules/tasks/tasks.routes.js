@@ -20,7 +20,7 @@ taskRouter.get(
     getAllTasks
 );
 
-taskRouter.get('/:id', validator(idSchema), getTaskById);
+taskRouter.get('/:id', ProtectedRoute, validator(idSchema), getTaskById);
 
-taskRouter.put("/update/:id", ProtectedRoute, validator(updateTaskSchema), updateTask)
-taskRouter.delete("/delete/:id", ProtectedRoute, validator(idSchema), deleteTask)
+taskRouter.put("/:id", ProtectedRoute, validator(updateTaskSchema), updateTask)
+taskRouter.delete("/:id", ProtectedRoute, validator(idSchema), deleteTask)

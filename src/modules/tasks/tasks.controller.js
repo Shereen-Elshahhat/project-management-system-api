@@ -52,13 +52,9 @@ export const getTaskById = catchError(async (req, res, next) => {
 export const getAllTasks = catchError(async (req, res, next) => {
     const filter = {};
 
-    // 👑 admin sees everything
-    if (req.user.role === "admin") {
-        let filter = {};
-    }
-    // 👤 user sees only their assigned tasks
-    else {
-        filter.assignedUser = req.user._id;
+    // 👑 only admin sees everything
+    if (req.user.role !== "admin") {
+        filter.assignedUser = req.user.id;
     }
 
     const tasks = await Task.find(filter)
@@ -79,15 +75,26 @@ export const getAllTasks = catchError(async (req, res, next) => {
 
 // ==================================== update task ==============================================
 export const updateTask = catchError(async(req,res,next)=>{
+    const { title, description, assignedUser, dueDate, status } = req.body;
     const updatedData = {};
-    if(title) updatedData.title = req.body.title;
-    if(description) updatedData.description = req.body.description;
-    if(assignedUser) updatedData.assignedUser = req.body.assignedUser;
-    if(dueDate) updatedData.dueDate = req.body.dueDate;
-    if(status) updatedData.status = req.body.status;
+    if(title !== undefined) updatedData.title = title;
+    if(description !== undefined) updatedData.description = description;
+    if(assignedUser !== undefined) updatedData.assignedUser = assignedUser;
+    if(dueDate !== undefined) updatedData.dueDate = dueDate;
+    if(status !== undefined) updatedData.status = status;
     // update data
-    const data = await Task.findByIdAndUpdate(req.params.id,updatedData,{returnDocument:"after"});
-    res.status(201).json({message:"Data updated successfully",data});
+    const data = await Task.findByIdAndUpdate(req.params.id,updatedData,{new:true});
+    if(!data) return next(new AppError("Task not found",404));
+    // check if user is owner or admin
+    const isOwner = data.assignedUser.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+        return res.status(403).json({
+            message: "Not authorized to update this task",
+        });
+    };
+    // update
+    res.status(200).json({message:"Data updated successfully",data});
 });
 
 // ======================================= delete task ============================================
@@ -96,7 +103,16 @@ export const deleteTask = catchError(async(req,res,next)=>{
     const task = await Task.findById(id);
     if (!task) {
         return next(new AppError("Task not found",404));
-    }
+    };
+    // check if user is owner or admin
+    const isOwner = data.assignedUser.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+        return res.status(403).json({
+            message: "Not authorized to update this task",
+        });
+    };
+    // delete
     await Task.findByIdAndDelete(id);
     res.status(200).json({message: "Task deleted successfully"});
 });

@@ -5,25 +5,16 @@ import { AppError } from "../../utils/AppError.js";
 // =============================================== add user by admin ===========================================
 const createUser= catchError(async(req,res,next) => {
     const   {name,email,password,role}=req.body;
-    if(req.body.role!=='user'&&req.body.role!=='admin'){
-        return next(new AppError("Invalid role ",403))
-    }
-    else {
-        const existing= await User.findOne({ email });
-        if(existing){
-            return res.status(403).json({ message: 'E-mail already exists' });
-        }
-        else{
+    // create user
             const newuser = await User.create({
                 name,
                 email,
                 password,
                 role,
             });
+            newuser.password = undefined;
             return res.status(201).json({ message: 'User created', newuser });
-        }
-    }
-})
+});
 
 // ===================================================== update user ===========================================
 const updateUser = catchError(async(req,res,next)=>{
@@ -31,26 +22,36 @@ const updateUser = catchError(async(req,res,next)=>{
     const updatedData = {};
     if(req.body.name) updatedData.name = req.body.name;
     if(req.body.email) updatedData.email = req.body.email;
-    if(req.body.password) updatedData.password = req.body.password;
+    if(req.body.password) {
+        updatedData.password = await bcrypt.hash(req.body.password, 8);
+    }
     if(req.body.role) updatedData.role = req.body.role;
     if(req.body.status) updatedData.status = req.body.status;
-
+    // check if user is owner or admin
+    const isOwner = data.assignedUser.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+        return res.status(403).json({
+            message: "Not authorized to update this task",
+        });
+    };
     // update data
-    const data = await User.findByIdAndUpdate(req.params.id,updatedData,{returnDocument:"after"});
-    res.status(201).json({message:"Data updated successfully",data});
+    const data = await User.findByIdAndUpdate(req.params.id,updatedData,{new:true});
+    if(!data) return next(new AppError("User not found",404));
+    res.status(200).json({message:"Data updated successfully",data});
 });
 
 // ===================================================== get user by id ==========================================
 const getUser = catchError(async(req,res,next)=>{
     const user = await User.findById(req.params.id);
     if(!user) return next(new AppError("User not found",404))
-    res.status(201).json({message:"Done",user});
+    res.status(200).json({message:"Done",user});
 });
 
 // ===================================================== get all users ===========================================
 const getAllUsers =catchError(async(req,res,next) => {
     const users = await User.find();
-    if (!users) {
+    if (!users.length === 0) {
         return next(new AppError("something went wrong",404));
     }
     res.status(200).json(users);

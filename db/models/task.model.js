@@ -28,12 +28,6 @@ const taskSchema = new Schema(
 
     dueDate: {
       type: Date,
-      validate: {
-        validator: function (value) {
-          return !value || value >= new Date().setHours(0, 0, 0, 0);
-        },
-        message: "Due date cannot be in the past",
-      },
     },
   },
   { timestamps: true, versionKey: false },
