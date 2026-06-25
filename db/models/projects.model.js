@@ -13,7 +13,7 @@ const projectSchema = new Schema(
       trim: true,
     },
 
-    admin: {
+    admin : {
       type: Types.ObjectId,
       ref: "user",
       required: true,

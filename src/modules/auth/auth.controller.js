@@ -15,8 +15,14 @@ const Login = catchError(async(req,res,next)=>{
         let isExist = await User.findOne({email:req.body.email}).select("+password")
         if(isExist && (await bcrypt.compare(req.body.password , isExist.password))){
             if(isExist.status === "No Active") return res.status(403).json({message:"your account is not active , please connect with admin"})
-            jwt.sign({id:isExist._id,name:isExist.name,role:isExist.role},process.env.JWT_SECRET,{ expiresIn: "7d" },(error,token)=>{
-                return res.status(200).json({message:"success login with token"  ,token});
+            jwt.sign({id:isExist._id,name:isExist.name,role:isExist.role},process.env.JWT_SECRET,{ expiresIn: "7d" },
+        (error,token)=>{
+
+        if (error) {
+            console.log(error);
+            return next(error);
+                    }
+        return res.status(200).json({message:"success login with token"  , token });
             })
         }else{
             return res.status(404).json({message:"incorrect email or password"});

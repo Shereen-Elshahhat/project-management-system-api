@@ -25,7 +25,8 @@ export const updateProject = catchError(async(req,res,next)=>{
 
   const project = await Project.findById(req.params.id)
 
-if(!project) return res.status(404).json({message : "not found"}) 
+if(!project) return res.status(404).json({message : "project not found"}) 
+
 // next(new AppError("project is not founded" , 400))
 
   Object.assign (project, req.body)
@@ -38,6 +39,7 @@ if(!project) return res.status(404).json({message : "not found"})
 
 
 export const getAllProjects = catchError(async (req, res, next) => {
+
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
 
@@ -57,6 +59,10 @@ export const getAllProjects = catchError(async (req, res, next) => {
     .limit(limit);
 
   const totalPages = Math.ceil(totalResults / limit) || 1;
+
+// console.log(req.user);
+// console.log(await Project.find());
+// console.log(filterObj);
 
   res.status(200).json({
     message: "success",

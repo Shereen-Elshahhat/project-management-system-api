@@ -32,10 +32,10 @@ export const createProjectSchema = Joi.object({
 
 
 export const updateProjectSchema = Joi.object({
+  id: Joi.string().hex().length(24).required(),
   title: Joi.string().trim(),
   description: Joi.string().trim().allow(""),
-  team: Joi.array().items(Joi.string().hex().length(24))
-    .optional(),
+  team: Joi.array().items(Joi.string().hex().length(24) )
 }).min(1);
 
 
