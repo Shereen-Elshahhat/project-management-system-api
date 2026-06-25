@@ -1,15 +1,15 @@
-import { UserModel } from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 
 const users = [
   {
-    username: "admin",
+    name: "admin",
     email: "admin@example.com",
     password: "password123",
     role: "admin",
     status: "active"
   },
   {
-    username: "user1",
+    name: "user1",
     email: "user@example.com",
     password: "password123",
     role: "user",
@@ -18,8 +18,12 @@ const users = [
 ];
 
 export const seedUsers = async () => {
-  // * Uncomment this line if you want to clear existing data
-  // await UserModel.deleteMany({});
-  await UserModel.insertMany(users);
+  if (process.env.NODE_ENV !== "development") {
+    console.error("User seeding aborted: Environment is not development.");
+    return;
+  }
+  // Safe clearance in development environment
+  await User.deleteMany({});
+  await User.insertMany(users);
   console.log("Users seeded successfully.");
 };

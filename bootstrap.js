@@ -16,9 +16,4 @@ export const bootstrap = (app)=>{
     })
     
     app.use(globalError)
-    process.on("unhandledRejection",(err)=>{
-        console.log("error DB");
-        
-    })
-    
 }

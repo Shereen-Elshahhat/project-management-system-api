@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi, { objectId } from "../../utils/joi.js";
 
 export const getAllProjectsSchema = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({
@@ -8,13 +8,15 @@ export const getAllProjectsSchema = Joi.object({
     "number.min": "Limit must be at least 1",
   }),
   sort: Joi.string().optional(),
+  fields: Joi.string().optional(),
+  search: Joi.string().optional(),
   // allowed filters
   title: Joi.string().optional().trim(),
   description: Joi.string().optional().trim(),
 }).unknown(false);
 
 export const getProjectByIdSchema = Joi.object({
-  id: Joi.string().hex().length(24).required(),
+  id: objectId().required(),
 }).unknown(false);
 
 export const createProjectSchema = Joi.object({
@@ -25,26 +27,22 @@ export const createProjectSchema = Joi.object({
 
   description: Joi.string().trim().allow("").optional(),
 
-  admin: Joi.string().hex().length(24).required().messages({
-    "string.length": "Admin ID must be a valid ObjectId",
-  }),
-
-  team: Joi.array().items(Joi.string().hex().length(24)).optional(),
+  team: Joi.array().items(objectId()).min(1).optional(),
 }).unknown(false);
 
 export const updateProjectSchema = Joi.object({
-  id: Joi.string().hex().length(24).required().messages({
+  id: objectId().required().messages({
     "any.required": "Project ID is required",
   }),
   title: Joi.string().trim().optional(),
   description: Joi.string().trim().allow("").optional(),
-  team: Joi.array().items(Joi.string().hex().length(24)).optional(),
+  team: Joi.array().items(objectId()).min(1).optional(),
 })
   .min(1)
   .unknown(false);
 
 export const deleteProjectSchema = Joi.object({
-  id: Joi.string().hex().length(24).required().messages({
+  id: objectId().required().messages({
     "any.required": "Project ID is required",
   }),
 }).unknown(false);

@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 import { seedUsers } from "./user.seed.js";
+import dotenv from "dotenv";
+dotenv.config();
+
+if (process.env.NODE_ENV !== "development") {
+  console.error("Dangerous database seeding aborted: Seeding is only allowed in development environment!");
+  process.exit(1);
+}
 
 const runSeeder = async () => {
   try {

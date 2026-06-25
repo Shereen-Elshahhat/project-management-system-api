@@ -6,12 +6,17 @@ export class APIFeatures {
 
   filter() {
     const queryObj = { ...this.queryString };
-    const excludeFields = ["page", "sort", "limit"];
+    const excludeFields = ["page", "sort", "limit", "fields", "search"];
     excludeFields.forEach((el) => delete queryObj[el]);
+    
     Object.keys(queryObj).forEach((key) => {
       const value = queryObj[key];
 
-      // global search:
+      // Exact matching for enum fields (status, role)
+      if (["status", "role"].includes(key)) {
+        return;
+      }
+
       // If the field is a string and NOT an ObjectId then apply regex
       if (
         typeof value === "string" &&
@@ -30,6 +35,19 @@ export class APIFeatures {
     return this;
   }
 
+  search(fields = []) {
+    if (this.queryString.search && fields.length > 0) {
+      const keyword = this.queryString.search;
+      const querySearch = {
+        $or: fields.map((field) => ({
+          [field]: { $regex: keyword, $options: "i" },
+        })),
+      };
+      this.query = this.query.find(querySearch);
+    }
+    return this;
+  }
+
   sort() {
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(",").join(" ");
@@ -37,6 +55,14 @@ export class APIFeatures {
     } else {
       //defualt filtering
       this.query = this.query.sort("-createdAt");
+    }
+    return this;
+  }
+
+  limitFields() {
+    if (this.queryString.fields) {
+      const fields = this.queryString.fields.split(",").join(" ");
+      this.query = this.query.select(fields);
     }
     return this;
   }

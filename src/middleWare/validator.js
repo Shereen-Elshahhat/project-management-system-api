@@ -8,8 +8,7 @@ export const validator =(schema)=>{
          let {error} = schema.validate(filter,{abortEarly:false})
          if(error){ 
              const messageError = error.details.map((err)=> err.message)
-             next(new AppError(messageError,401))
-         } else{
-            next()
-         }
-}} 
+             return next(new AppError(messageError,401))
+         } 
+         next()
+}}
