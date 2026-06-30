@@ -77,16 +77,21 @@ export const getAllTasks = catchError(async (req, res, next) => {
     if (req.user.role !== "admin") {
         filter.assignedUser = req.user.id;
     }
-
-    const tasks = await Task.find(filter)
-        .populate({
-            path: "project",
-            select: "title description admin",
-        })
-        .populate({
-            path: "assignedUser",
-            select: "name email role",
-        });
+    const features = new APIFeatures(Task.find(filter), req.query)
+        .filter()
+        .search(["title", "description"])
+        .sort()
+        .limitFields()
+        .paginate();
+    const tasks = await features.query
+    .populate({
+        path: "project",
+        select: "title description admin",
+    })
+    .populate({
+        path: "assignedUser",
+        select: "name email role",
+    });
 
     res.status(200).json({
         count: tasks.length,

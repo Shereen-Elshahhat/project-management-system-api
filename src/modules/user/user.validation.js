@@ -1,5 +1,4 @@
-import Joi from "joi";
-
+import Joi, { objectId } from "../../utils/joi.js";
 
 export const addUserValidation = Joi.object({
         name:Joi.string().min(3).max(30).required(),
@@ -19,15 +18,5 @@ export const updateUserSchema = Joi.object({
     });
 
 export const idSchema = Joi.object({
-        id: Joi.string().length(24).hex().required(),
-    });
-
-
-
-Joi.defaults(schema => schema.messages({
-    "string.empty": "Field is required",
-    "string.min": "Field must be at least {#limit} characters long",
-    "string.max": "Field must be at most {#limit} characters long",
-    "string.pattern.base": "Password must be at least 9 characters long and start with an uppercase letter",
-    "any.required": "Field is required",
-}));
+  id: objectId().required(),
+});
