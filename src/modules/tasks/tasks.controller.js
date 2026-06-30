@@ -43,7 +43,7 @@ export const createTask = catchError(async (req, res, next) => {
 
     res.status(201).json({
         message: "Task created successfully",
-        task: populatedTask,
+        data: populatedTask,
     });
 });
 
@@ -61,13 +61,12 @@ export const getTaskById = catchError(async (req, res, next) => {
     const isOwner = task.assignedUser.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
     if (!isOwner && !isAdmin) {
-        return res.status(403).json({
-            message: "Not authorized to update this task",
-        });
+        return next(new AppError("Not authorized to view this task", 403));
     };
 
     res.status(200).json({
-        task,
+        message: "Task found successfully",
+        data: task,
     });
 });
 
@@ -91,7 +90,7 @@ export const getAllTasks = catchError(async (req, res, next) => {
 
     res.status(200).json({
         count: tasks.length,
-        tasks,
+        data: tasks,
     });
 });
 
@@ -116,9 +115,7 @@ export const updateTask = catchError(async(req,res,next)=>{
     const isOwner = task.assignedUser.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
     if (!isOwner && !isAdmin) {
-        return res.status(403).json({
-            message: "Not authorized to update this task",
-        });
+        return next(new AppError("Not authorized to update this task", 403));
     };
     // update
     await task.updateOne(updatedData);
@@ -140,9 +137,7 @@ export const deleteTask = catchError(async(req,res,next)=>{
     const isOwner = task.assignedUser.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
     if (!isOwner && !isAdmin) {
-        return res.status(403).json({
-            message: "Not authorized to update this task",
-        });
+        return next(new AppError("Not authorized to delete this task", 403));
     };
     // delete
     await Task.findByIdAndDelete(id);

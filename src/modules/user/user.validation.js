@@ -6,15 +6,16 @@ export const addUserValidation = Joi.object({
         email:Joi.string().email().required(),
         password:Joi.string().pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{9,30}$/).required(),
         rePassword:Joi.valid(Joi.ref("password")).required(),
-        role:Joi.string().valid("user","admin").default("user").required()
+        role:Joi.string().valid("user","admin").default("user").required(),
+        status:Joi.string().valid("active","inactive")
     });
 
 export const updateUserSchema = Joi.object({
-        id: Joi.string().length(24).hex().required(),
         name:Joi.string().min(3).max(30),
         email:Joi.string().email(),
-        password:Joi.string().pattern(/^[A-Z][A-Za-z0-9]{8,30}$/),
-        role:Joi.string().valid("user","admin").default("user")
+        password:Joi.string().pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{9,30}$/),
+        role:Joi.string().valid("user","admin"),
+        status:Joi.string().valid("active","inactive")
     });
 
 export const idSchema = Joi.object({

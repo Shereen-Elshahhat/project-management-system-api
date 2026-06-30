@@ -21,8 +21,8 @@ export const idSchema = Joi.object({
 });
 
 export const updateTaskSchema = Joi.object({
-        title: Joi.string().trim().optional(),
-        description: Joi.string().trim().optional(),
+        title: Joi.string().trim().min(3).max(30).optional(),
+        description: Joi.string().trim().min(3).max(30).optional(),
         assignedUser: Joi.string().hex().length(24).optional(),
         dueDate: Joi.date().greater("now"),
         status: Joi.string().valid("todo", "inprogress", "done").optional(),
