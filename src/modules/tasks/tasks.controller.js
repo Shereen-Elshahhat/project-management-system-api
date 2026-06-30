@@ -7,21 +7,34 @@ import { AppError } from '../../utils/AppError.js';
 export const createTask = catchError(async (req, res, next) => {
     const { project, assignedUser } = req.body;
 
+    // check if admin
+    if (req.user.role !== "admin") {
+        return next(new AppError("You are not authorized to create a task", 403));
+    };
     const projectExists = await Project.findById(project);
     if (!projectExists) {
         return next(new AppError("Project not found", 404));
     }
-
-
     if (assignedUser) {
         const userExists = await User.findById(assignedUser);
-
         if (!userExists) {
             return next(new AppError("Assigned user not found", 404));
         }
     }
+    // check if user belongs to project team
+    const isAssignedUserMember = projectExists.team.some(
+    member => member.toString() === assignedUser
+    );
+    if (!isAssignedUserMember) {
+        return next(
+            new AppError("Assigned user is not a member of this project", 400)
+        );
+    };
 
-    const task = await Task.create(req.body);
+    const task = await Task.create(
+        project, 
+        assignedUser
+    );
 
 
     const populatedTask = await Task.findById(task._id)
@@ -33,6 +46,7 @@ export const createTask = catchError(async (req, res, next) => {
         task: populatedTask,
     });
 });
+
 export const getTaskById = catchError(async (req, res, next) => {
     const { id } = req.params;
 
@@ -43,6 +57,14 @@ export const getTaskById = catchError(async (req, res, next) => {
     if (!task) {
         return next(new AppError('Task not found', 404));
     }
+    // check if user is owner or admin
+    const isOwner = task.assignedUser.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+        return res.status(403).json({
+            message: "Not authorized to update this task",
+        });
+    };
 
     res.status(200).json({
         task,
@@ -83,10 +105,15 @@ export const updateTask = catchError(async(req,res,next)=>{
     if(dueDate !== undefined) updatedData.dueDate = dueDate;
     if(status !== undefined) updatedData.status = status;
     // update data
-    const data = await Task.findByIdAndUpdate(req.params.id,updatedData,{new:true});
-    if(!data) return next(new AppError("Task not found",404));
+    const task = await Task.findById(req.params.id);
+    if(!task) return next(new AppError("Task not found",404));
+    // check if project exists
+    const project = await Project.findById(task.project);
+    if (!project) {
+        return next(new AppError("Project not found", 404));
+    }
     // check if user is owner or admin
-    const isOwner = data.assignedUser.toString() === req.user._id.toString();
+    const isOwner = task.assignedUser.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
     if (!isOwner && !isAdmin) {
         return res.status(403).json({
@@ -94,7 +121,12 @@ export const updateTask = catchError(async(req,res,next)=>{
         });
     };
     // update
-    res.status(200).json({message:"Data updated successfully",data});
+    await task.updateOne(updatedData);
+    const updatedTask = await Task.findById(task._id)
+        .populate("project", "title description")
+        .populate("assignedUser", "name email role");
+    // send response
+    res.status(200).json({message:"Task updated successfully", data : updatedTask});
 });
 
 // ======================================= delete task ============================================
@@ -105,7 +137,7 @@ export const deleteTask = catchError(async(req,res,next)=>{
         return next(new AppError("Task not found",404));
     };
     // check if user is owner or admin
-    const isOwner = data.assignedUser.toString() === req.user._id.toString();
+    const isOwner = task.assignedUser.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
     if (!isOwner && !isAdmin) {
         return res.status(403).json({
