@@ -10,6 +10,7 @@ export const addUserValidation = Joi.object({
     });
 
 export const updateUserSchema = Joi.object({
+        id: objectId().required(),
         name:Joi.string().min(3).max(30),
         email:Joi.string().email(),
         password:Joi.string().pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{9,30}$/),

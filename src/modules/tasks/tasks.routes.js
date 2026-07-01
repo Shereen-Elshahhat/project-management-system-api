@@ -7,20 +7,8 @@ import {createTaskSchema, idSchema, updateTaskSchema} from './tasks.validation.j
 
 export const taskRouter = express.Router();
 
-taskRouter.post(
-    '/',
-    ProtectedRoute,
-    allowedTo("admin"),
-    validator(createTaskSchema),
-    createTask
-);
-taskRouter.get(
-    '/',
-    ProtectedRoute,
-    getAllTasks
-);
-
+taskRouter.post( '/',ProtectedRoute,allowedTo("admin"),validator(createTaskSchema),createTask);
+taskRouter.get('/',ProtectedRoute,getAllTasks);
 taskRouter.get('/:id', ProtectedRoute, validator(idSchema), getTaskById);
-
 taskRouter.put("/:id", ProtectedRoute, validator(updateTaskSchema), updateTask)
 taskRouter.delete("/:id", ProtectedRoute, validator(idSchema), deleteTask)

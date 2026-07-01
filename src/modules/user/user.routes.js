@@ -10,7 +10,7 @@ const router = Router();
 
 router.get("/me", ProtectedRoute, getMe);
 router.post("/add", ProtectedRoute, allowedTo("admin"), checkEmail, validator(addUserValidation), createUser)
-router.put("/update", ProtectedRoute, allowedTo("admin", "user"), validator(updateUserSchema), updateUser)
+router.put("/update/:id", ProtectedRoute, allowedTo("admin", "user"), validator(updateUserSchema), updateUser)
 router.get("/get/:id", ProtectedRoute, allowedTo("admin"),validator(idSchema), getUser)
 router.get("/", ProtectedRoute, allowedTo("admin"), getAllUsers)
 router.delete('/:id', ProtectedRoute, allowedTo("admin"), validator(idSchema), deleteUser);

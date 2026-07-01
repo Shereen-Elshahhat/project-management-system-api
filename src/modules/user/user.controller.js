@@ -12,6 +12,7 @@ const createUser = catchError(async (req, res, next) => {
   }
 
   const newUser = await User.create({ name, email, password, role });
+  
   const data = await User.findById(newUser._id).select("-password");
 
   res.status(201).json({

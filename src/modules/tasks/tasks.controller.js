@@ -6,6 +6,7 @@ import { AppError } from '../../utils/AppError.js';
 import { APIFeatures } from '../../utils/APIFeatures.js';
 
 export const createTask = catchError(async (req, res, next) => {
+
     const { project, assignedUser } = req.body;
 
     // check if admin
@@ -32,10 +33,7 @@ export const createTask = catchError(async (req, res, next) => {
         );
     };
 
-    const task = await Task.create(
-        project, 
-        assignedUser
-    );
+    const task = await Task.create(req.body);
 
 
     const populatedTask = await Task.findById(task._id)
@@ -59,7 +57,7 @@ export const getTaskById = catchError(async (req, res, next) => {
         return next(new AppError('Task not found', 404));
     }
     // check if user is owner or admin
-    const isOwner = task.assignedUser.toString() === req.user._id.toString();
+   const isOwner =task.assignedUser._id.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
     if (!isOwner && !isAdmin) {
         return next(new AppError("Not authorized to view this task", 403));
@@ -120,6 +118,9 @@ export const getAllTasks = catchError(async (req, res, next) => {
 
 // ==================================== update task ==============================================
 export const updateTask = catchError(async(req,res,next)=>{
+
+    console.log(req.body);
+    
     const { title, description, assignedUser, dueDate, status } = req.body;
     const updatedData = {};
     if(title !== undefined) updatedData.title = title;

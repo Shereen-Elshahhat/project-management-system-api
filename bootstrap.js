@@ -11,7 +11,7 @@ export const bootstrap = (app)=>{
     app.use("/auth",authRouter)
     app.use("/projects",projectRouter)
     app.use("/users",userRouter)
-    app.use("/Tasks",taskRouter)
+    app.use("/tasks",taskRouter)
 
     app.use((req,res,next)=>{
         next(new AppError(`404 not found page ${req.originalUrl}`,404))
