@@ -49,7 +49,7 @@ export const addProject = catchError(async (req, res, next) => {
 export const updateProject = catchError(async (req, res, next) => {
   const project = await Project.findById(req.params.id);
   if (!project) return next(new AppError("Project not found", 404));
-  
+
   // Ownership Validation
   if (project.admin.toString() !== req.user.id) {
     return next(
@@ -169,7 +169,7 @@ export const deleteProject = catchError(async (req, res, next) => {
     await Task.deleteMany({ project: project._id }).session(session);
     // Delete the project
     await Project.findByIdAndDelete(req.params.id).session(session);
-    
+
     await session.commitTransaction();
     session.endSession();
   } catch (error) {
