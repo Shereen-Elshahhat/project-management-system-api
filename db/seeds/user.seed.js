@@ -4,14 +4,14 @@ const users = [
   {
     name: "admin",
     email: "admin@example.com",
-    password: "password123",
+    password: "Password123",
     role: "admin",
     status: "active"
   },
   {
     name: "user1",
     email: "user@example.com",
-    password: "password123",
+    password: "Password123",
     role: "user",
     status: "active"
   }
@@ -24,6 +24,6 @@ export const seedUsers = async () => {
   }
   // Safe clearance in development environment
   await User.deleteMany({});
-  await User.insertMany(users);
+  await User.create(users);
   console.log("Users seeded successfully.");
 };

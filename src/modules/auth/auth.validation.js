@@ -26,3 +26,22 @@ export const resetPasswordValidation = Joi.object({
   password: Joi.string().pattern(/^[A-Z][A-Za-z0-9]{8,30}$/).required(),
   rePassword: Joi.valid(Joi.ref("password")).required(),
 });
+
+export const verifyAccountValidation = Joi.object({
+  email: Joi.string().email().required(),
+  otp: Joi.string().length(6).required(),
+});
+
+export const resendVerificationValidation = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+export const changePasswordValidation = Joi.object({
+  oldPassword: Joi.string().required(),
+  password: Joi.string().pattern(/^[A-Z][A-Za-z0-9]{8,30}$/).required(),
+  rePassword: Joi.valid(Joi.ref("password")).required(),
+});
+
+export const refreshTokenValidation = Joi.object({
+  refreshToken: Joi.string().required(),
+});
