@@ -53,7 +53,7 @@ export class APIFeatures {
       const sortBy = this.queryString.sort.split(",").join(" ");
       this.query = this.query.sort(sortBy);
     } else {
-      //defualt filtering
+      //default filtering
       this.query = this.query.sort("-createdAt");
     }
     return this;
