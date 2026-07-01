@@ -129,4 +129,13 @@ const deleteUser = catchError(async (req, res, next) => {
   });
 });
 
-export { getUser, createUser, getAllUsers, deleteUser, updateUser };
+const getMe = catchError(async (req, res, next) => {
+  res.status(200).json({
+    status: "success",
+    message: "Profile fetched successfully",
+    data: req.user,
+  });
+});
+
+export { getUser, createUser, getAllUsers, deleteUser, updateUser, getMe };
+
