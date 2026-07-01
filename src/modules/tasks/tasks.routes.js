@@ -1,7 +1,7 @@
 import express from 'express';
 import {createTask, getTaskById, getAllTasks, updateTask, deleteTask,} from './tasks.controller.js';
 import { validator } from "../../middleWare/validator.js";
-import { ProtectedRoute, allowedTo } from "../auth/auth.controller.js";
+import { ProtectedRoute, allowedTo } from "../../middleWare/auth.js";
 import {createTaskSchema, idSchema, updateTaskSchema} from './tasks.validation.js';
 
 

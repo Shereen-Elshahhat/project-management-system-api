@@ -1,5 +1,5 @@
 import express from "express";
-import { ProtectedRoute, allowedTo } from "../auth/auth.controller.js";
+import { ProtectedRoute, allowedTo } from "../../middleWare/auth.js";
 import {
   addProject,
   deleteProject,
