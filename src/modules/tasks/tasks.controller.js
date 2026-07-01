@@ -3,6 +3,7 @@ import { Project } from '../../../db/models/projects.model.js';
 import { User } from "../../../db/models/user.model.js";
 import { catchError } from '../../middleWare/catchError.js';
 import { AppError } from '../../utils/AppError.js';
+import { APIFeatures } from '../../utils/APIFeatures.js';
 
 export const createTask = catchError(async (req, res, next) => {
     const { project, assignedUser } = req.body;
@@ -73,28 +74,46 @@ export const getTaskById = catchError(async (req, res, next) => {
 export const getAllTasks = catchError(async (req, res, next) => {
     const filter = {};
 
-    // 👑 only admin sees everything
+    // allow the admin to see all tasks
     if (req.user.role !== "admin") {
         filter.assignedUser = req.user.id;
     }
+
     const features = new APIFeatures(Task.find(filter), req.query)
         .filter()
         .search(["title", "description"])
         .sort()
-        .limitFields()
-        .paginate();
+        .limitFields();
+
+    // clone count before pagination is applied for total results
+    const totalResults = await features.query.clone().countDocuments();
+
+    // apply pagination
+    features.paginate();
+
     const tasks = await features.query
-    .populate({
-        path: "project",
-        select: "title description admin",
-    })
-    .populate({
-        path: "assignedUser",
-        select: "name email role",
-    });
+        .populate({
+            path: "project",
+            select: "title description admin",
+        })
+        .populate({
+            path: "assignedUser",
+            select: "name email role",
+        });
+
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+    const totalPages = Math.ceil(totalResults / limit) || 1;
 
     res.status(200).json({
-        count: tasks.length,
+        status: "success",
+        message: "Tasks fetched successfully",
+        results: tasks.length,
+        metadata: {
+            currentPage: page,
+            totalPages: totalPages,
+            totalResults: totalResults,
+        },
         data: tasks,
     });
 });
