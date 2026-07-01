@@ -9,6 +9,18 @@ export const globalError = (err, req, res, next) => {
     message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
   }
 
+  // Handle Mongoose CastError (invalid ObjectId format)
+  if (err.name === "CastError") {
+    code = 400;
+    message = `Invalid format for field ${err.path}: "${err.value}"`;
+  }
+
+  // Handle Mongoose ValidationError
+  if (err.name === "ValidationError") {
+    code = 400;
+    message = Object.values(err.errors).map((val) => val.message);
+  }
+
   if (process.env.NODE_ENV === "development") console.error(err.stack);
 
   res.status(code).json({
